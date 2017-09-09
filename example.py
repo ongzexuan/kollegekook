@@ -19,6 +19,10 @@ def stylesheets(filename):
 def stylesheets(filename):
     return static_file(filename, root='static/')
 
+@get('/<filename:re:.*\.html>')
+def stylesheets(filename):
+    return static_file(filename, root='static/')
+
 @get("/graph")
 def get_graph():
     results = graph.cypher.execute(
