@@ -17,6 +17,8 @@
 	  align-items: center;
 	}
 	</style>
+
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 </head>
 <body>
 <div class="vertical-center">
@@ -29,10 +31,10 @@
 			<h1>College Cook</h1>
             <div class="form-group">
 	            <div class="input-group">
-	                 <input type="text" value="Potato" placeholder="Search for Recipes/Ingredients" class="form-control" name="search">
-	                 <button class="btn btn-primary col-md-2" type="submit">Add</button>
-	                 <button class="btn btn-warning col-md-5" type="button">Search Ingredients</button>
-	                 <button class="btn btn-success col-md-5" type="button">Search Recipes</button>
+	                 <input id="inputtext" type="text" value="Potato" placeholder="Search for Recipes/Ingredients" class="form-control" name="search">
+	                 <button id = "addbtn" class="btn btn-primary col-md-2" type="submit">Add</button>
+	                 <button id = "searchibtn" class="btn btn-warning col-md-5" type="button">Search Ingredients</button>
+	                 <button id = "searchrbtn" class="btn btn-success col-md-5" type="button">Search Recipes</button>
 	            </div>
             </div>            
         </form>
@@ -45,6 +47,8 @@
 </div>
 
 <script type="text/javascript">
+	var q = "";
+
     $(function () {
         function searchRecipeass(title) {
             $.get("/movie/" + encodeURIComponent(title),
@@ -75,8 +79,16 @@
             return false;
         }
 
-        $("#search").submit(search);
-        search();
+        //$("#search").submit(search);
+        $("#searchibtn").on('click', function() {
+        	console.log("Search Ingredient Clicked!");     
+        	window.location.href = "/search?q="+$("#inputtext").val();
+        });
+        $("#searchrbtn").on('click', function() {
+        	console.log("Search Recipe Clicked!");
+        	window.location.href = "/search?q="+$("#inputtext").val();
+        });
+        
     })
 </script>
 
