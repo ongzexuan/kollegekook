@@ -4664,7 +4664,7 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 .panel {
   margin-bottom: 20px;
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
   border: 1px solid transparent;
   border-radius: 4px;
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -4771,7 +4771,7 @@ a.list-group-item.active:focus .list-group-item-text {
   padding: 10px 15px;
   border-bottom: 1px solid transparent;
   border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
+  border-top-left-radius: 3px;  
 }
 .panel-heading > .dropdown .dropdown-toggle {
   color: inherit;
@@ -4787,7 +4787,8 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 .panel-footer {
   padding: 10px 15px;
-  background-color: #f5f5f5;
+  /*background-color: #f5f5f5;*/
+  background-color: #d4a0a7;
   border-top: 1px solid #dddddd;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
@@ -4816,8 +4817,9 @@ a.list-group-item.active:focus .list-group-item-text {
   border-color: #dddddd;
 }
 .panel-default > .panel-heading {
-  color: #333333;
-  background-color: #f5f5f5;
+  color: #ffffff;
+  /*background-color: #f5f5f5;*/
+  background-color: #5da271;
   border-color: #dddddd;
 }
 .panel-default > .panel-heading + .panel-collapse .panel-body {
@@ -4828,7 +4830,7 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 .panel-primary {
   border-color: #42BDC2;
-}
+} 
 .panel-primary > .panel-heading {
   color: #ffffff;
   background-color: #42BDC2;

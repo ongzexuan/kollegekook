@@ -111,7 +111,7 @@
                         if (!data || data.length == 0) return;
                         data.forEach(function (row) {
                             var movie = row.movie;
-                            $("<tr><td class='movie'>" + movie.title + "</td><td>" + movie.released + "</td><td>" + movie.tagline + "</td><td>5 out of 5</td></tr>").appendTo(t)
+                            $("<tr><td class='movie'>" + movie.title + "</td><td>" + movie.released + "</td><td>" + movie.tagline + "</td><td>★★★★☆</td></tr>").appendTo(t)
                                     .click(function() { showMovie($(this).find("td.movie").text());})
                         });
                         showMovie(data[0].movie.title);
