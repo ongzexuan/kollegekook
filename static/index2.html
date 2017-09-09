@@ -1,0 +1,86 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>College Cook</title>
+
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+
+    <style type="text/css">
+    body { background: url("/kitchentop2.jpg") repeat fixed 0 0 rgba(0, 0, 0, 0); }
+
+    .vertical-center {
+	  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+	  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+	  display: flex;
+	  align-items: center;
+	}
+	</style>
+</head>
+<body>
+<div class="vertical-center">
+<div class="container">
+
+<div class="row">
+	<div class="col-md-offset-3 col-md-6">
+	<div class="jumbotron">
+		<form id="">
+			<h1>College Cook</h1>
+            <div class="form-group">
+	            <div class="input-group">
+	                 <input type="text" value="Potato" placeholder="Search for Recipes/Ingredients" class="form-control" name="search">
+	                 <button class="btn btn-primary col-md-2" type="submit">Add</button>
+	                 <button class="btn btn-warning col-md-5" type="button">Search Ingredients</button>
+	                 <button class="btn btn-success col-md-5" type="button">Search Recipes</button>
+	            </div>
+            </div>            
+        </form>
+       </div>
+	</div>
+
+
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        function searchRecipeass(title) {
+            $.get("/movie/" + encodeURIComponent(title),
+                    function (data) {
+                        if (!data) return;
+                        $("#title").text(data.title);
+                        $("#poster").attr("src","http://neo4j-contrib.github.io/developer-resources/language-guides/assets/posters/"+encodeURIComponent(data.title)+".jpg");
+                        var $list = $("#crew").empty();
+                        data.cast.forEach(function (cast) {
+                            $list.append($("<li>" + cast.name + " " +cast.job + (cast.job == "acted"?" as " + cast.role : "") + "</li>"));
+                        });
+                    }, "json");
+            return false;
+        }
+        function searchRecipes() {
+            var query=$("#search").find("input[name=search]").val();
+            $.get("/search?q=" + encodeURIComponent(query),
+                    function (data) {
+                        var t = $("table#results tbody").empty();
+                        if (!data || data.length == 0) return;
+                        data.forEach(function (row) {
+                            var recipe = row.recipe;
+                            $("<tr><td class='movie'>" + recipe.name + "</td><td>" + movie.released + "</td><td>" + movie.tagline + "</td><td>★★★★☆</td></tr>").appendTo(t)
+                                    .click(function() { showMovie($(this).find("td.movie").text());})
+                        });
+                        showMovie(data[0].movie.title);
+                    }, "json");
+            return false;
+        }
+
+        $("#search").submit(search);
+        search();
+    })
+</script>
+
+
+
+</body>
+</html>

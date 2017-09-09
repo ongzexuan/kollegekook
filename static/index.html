@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
     <title>College Cook</title>
 </head>
 
@@ -17,7 +17,7 @@
                         <form role="search" class="navbar-form" id="search">
                             <button class="btn btn-success" type="submit">Home</button>
                             <div class="form-group">
-                                <input type="text" value="Matrix" placeholder="Search for Movie Title" class="form-control" name="search">
+                                <input type="text" value="Potato" placeholder="Search for Recipe/Ingredient" class="form-control" name="search">
                             </div>
                             <button class="btn btn-default" type="submit">Search</button>
                         </form>
@@ -111,7 +111,7 @@
                         if (!data || data.length == 0) return;
                         data.forEach(function (row) {
                             var movie = row.movie;
-                            $("<tr><td class='movie'>" + movie.title + "</td><td>" + movie.released + "</td><td>" + movie.tagline + "</td><td>5 out of 5</td></tr>").appendTo(t)
+                            $("<tr><td class='movie'>" + movie.title + "</td><td>" + movie.released + "</td><td>" + movie.tagline + "</td><td>★★★★☆</td></tr>").appendTo(t)
                                     .click(function() { showMovie($(this).find("td.movie").text());})
                         });
                         showMovie(data[0].movie.title);
