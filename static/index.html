@@ -67,14 +67,12 @@
                 <div class="col-md-8 col-sm-8">
                     <h4>Ingredients</h4>
                     <ol id="ingredients">
-                    <li>Potato</li>
-                    <li>Carrot</li>
                     </ol>
                     <h4>Steps</h4>
                     <ol id="steps">
                     </ol>
                     <h4>Video</h4>
-                    <iframe id="video" width="300" height="225" src="https://www.youtube.com/embed/8TW-4Pv3U3Y" frameborder="0" allowfullscreen></iframe>
+                    <iframe id="video" width="300" height="225" src="" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
@@ -145,13 +143,30 @@
                         $("#title").text(data[0].ingredient.name);
                         $("#poster").attr("src",data[0].ingredient.pic_url);
 
+                        $.get("/search_recipe?q=" + encodeURIComponent(query),                
+                            function (data) {
+                            console.log(data[0].ingredient);
+                            if (!data || data.length == 0) return;
+                            var $list = $("#ingredients").empty();
+                            data.forEach(function (row) {
+                                var ingredient = row.ingredient;
+                                console.log(ingredient.name);
+                                $list.append("<li>"+ingredient.name+"</li>");
+                            });
+
+
+                            }, "json");
+                            
+
+                    
+
                         //var i = $("#ingredients");
-                        var $list = $("#ingredients").empty();
+                        /*var $list = $("#ingredients").empty();
                         data.forEach(function (row) {
                             var ingredient = row.ingredient;
                             console.log(ingredient.name);
                             $list.append("<li>"+ingredient.name+"</li>");
-                        });
+                        });*/
                         $("#steps").empty().append(data[0].ingredient.steps);
                         $("#video").attr("src",data[0].ingredient.video_url);
 
