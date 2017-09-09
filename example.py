@@ -110,7 +110,6 @@ def search_recipe():
 @get("/search_ingredients")
 def search_ingredients():
     try:
-        q = request.query["q"]  #q is recipe
     except KeyError:
         return []
     results = graph.cypher.execute(
