@@ -18,22 +18,22 @@ def get_index():
 @get("/graph")
 def get_graph():
     results = graph.cypher.execute(
-        "MATCH (m:Movie)<-[:ACTED_IN]-(a:Person) "
-        "RETURN m.title as movie, collect(a.name) as cast "
-        "LIMIT {limit}", {"limit": 100})
+        "MATCH(r:Recipe) < -[: Ingredient_in]-(i: Ingredient) "
+        "RETURN r.title as recipe, collect(i.name) as ingredients"
+    )
     nodes = []
     rels = []
     i = 0
-    for movie, cast in results:
-        nodes.append({"title": movie, "label": "movie"})
+    for recipe, ingredients in results:
+        nodes.append({"recipe": recipe, "label": "dish"})
         target = i
         i += 1
-        for name in cast:
-            actor = {"title": name, "label": "actor"}
+        for name in ingredients:
+            ingredient = {"ingredient": name, "label": "ingredient"}
             try:
-                source = nodes.index(actor)
+                source = nodes.index(ingredient)
             except ValueError:
-                nodes.append(actor)
+                nodes.append(ingredient)
                 source = i
                 i += 1
             rels.append({"source": source, "target": target})
@@ -48,18 +48,18 @@ def get_search():
         return []
     else:
         results = graph.cypher.execute(
-            "MATCH (movie:Movie) "
+            "MATCH (dish: Dish) "
             "WHERE movie.title =~ {title} "
-            "RETURN movie", {"title": "(?i).*" + q + ".*"})
+            "RETURN movie", {"title": "(?i).*" + q + ".*"}
+        )
         response.content_type = "application/json"
         return json.dumps([{"movie": row.movie.properties} for row in results])
 
 
-@get("/movie/<title>")
-def get_movie(title):
+@get("/recipe/<title>")
+def get_recipe(title):
     results = graph.cypher.execute(
-        "MATCH (movie:Movie {title:{title}}) "
-        "OPTIONAL MATCH (movie)<-[r]-(person:Person) "
+        "MATCH (recipe:Recipe {title:{title}}) "
         "RETURN movie.title as title,"
         "collect([person.name, head(split(lower(type(r)),'_')), r.roles]) as cast "
         "LIMIT 1", {"title": title})
@@ -67,6 +67,49 @@ def get_movie(title):
     return {"title": row.title,
             "cast": [dict(zip(("name", "job", "role"), member)) for member in row.cast]}
 
+
+@get("/search_recipe")
+def search_recipe():
+    try:
+        q = request.query["q"]
+        # q is comma-separated string of ingredients
+    except KeyError:
+        return []
+    else:
+        ingredient_list = q.split(',')
+
+        ingredient_set = "['"
+        for ingredient in ingredient_list:
+            ingredient_set += ingredient + "','"
+        ingredient_set -= ",'"
+        ingredient_set += "]"
+
+        # ingredient_set is a string of the form ['Oil','Water'] e.g.
+
+        results = graph.cypher.execute(
+            "MATCH (n:Recipe)<-[:Ingredient_in]-(i:Ingredient)"
+            "WHERE i.name IN {ingredient_set: ingredient_set}"
+            "RETURN (n)<-[:Ingredient_in]-(:Ingredient)",
+            {"ingredient_set": ingredient_set}
+        )
+        # Note: passing a dictionary as second parameter to graph.cypher.execute
+        # has not been tested; the first 3 lines have been tested in Neo4J
+
+        return json.dumps([{"recipe": row.recipe.properties} for row in results])
+
+
+@get("/search_ingredients")
+def search_ingredients():
+    try:
+        q = request.query["q"]  #q is recipe
+    except KeyError:
+        return []
+    results = graph.cypher.execute(
+        "MATCH ((i:Ingredient)-[Ingredient_in]->(r:Recipe {name: q})) "
+        "RETURN collect(i.name) as ingredients"
+    )
+    response.content_type = "application/json"
+    return json.dumps([{"recipe": row.Recipe.properties} for row in results])
 
 if __name__ == "__main__":
     run(port=8080)
