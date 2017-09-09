@@ -270,7 +270,7 @@ body {
   line-height: 1.428571429;
   color: #333333;
   background-color: #ffffff;
-  background: url("../img/neo4j_background3.gif") repeat fixed 0 0 rgba(0, 0, 0, 0);
+  background: url("/bg2.jpg") repeat fixed 0 0 rgba(0, 0, 0, 0);
     font-family: 'Open Sans',Arial !important;
 
 }
@@ -4664,7 +4664,7 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 .panel {
   margin-bottom: 20px;
-  /*background-color: #ffffff;*/
+  background-color: #ffffff;
   border: 1px solid transparent;
   border-radius: 4px;
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -4787,8 +4787,8 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 .panel-footer {
   padding: 10px 15px;
-  /*background-color: #f5f5f5;*/
-  background-color: #d4a0a7;
+  background-color: #f5f5f5;
+  /*background-color: #d4a0a7;*/
   border-top: 1px solid #dddddd;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
