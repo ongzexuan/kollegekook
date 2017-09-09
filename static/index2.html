@@ -82,11 +82,11 @@
         //$("#search").submit(search);
         $("#searchibtn").on('click', function() {
         	console.log("Search Ingredient Clicked!");     
-        	window.location.href = "/search?q="+$("#inputtext").val();
+        	window.location.href = "/?search="+$("#inputtext").val();
         });
         $("#searchrbtn").on('click', function() {
         	console.log("Search Recipe Clicked!");
-        	window.location.href = "/search?q="+$("#inputtext").val();
+        	window.location.href = "/?search="+$("#inputtext").val();
         });
         
     })

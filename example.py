@@ -11,6 +11,18 @@ graph = Graph("http://neo4j:password@localhost:7474/db/data")
 def get_index():
     return static_file("index.html", root="static")
 
+@get("/<filename:re:.*\.css>")
+def stylesheets(filename):
+    return static_file(filename, root="static")
+
+@get("/<filename:re:.*\.jpg>")
+def stylesheets(filename):
+    return static_file(filename, root="static")
+
+@get("/<filename:re:.*\.html>")
+def stylesheets(filename):
+    return static_file(filename, root="static")
+
 
 @get("/graph")
 def get_graph():
@@ -92,7 +104,7 @@ def search_recipe():
         # Note: passing a dictionary as second parameter to graph.cypher.execute
         # has not been tested; the first 3 lines have been tested in Neo4J
 
-        return json.dumps([{"recipe": row.recipe.properties} for row in results])
+        return json.dumps([{"recipe": row.n.properties} for row in results])
 
 
 @get("/search_ingredients")
@@ -102,11 +114,12 @@ def search_ingredients():
     except KeyError:
         return []
     results = graph.cypher.execute(
-        "MATCH ((i:Ingredient)-[Ingredient_in]->(r:Recipe {name: q})) "
-        "RETURN collect(i.name) as ingredients"
+        #"MATCH (n) RETURN n;"
+        "MATCH ((i:Ingredient)-[Ingredient_in]->(r:Recipe {name: "+q+"})) RETURN collect(i.name) as ingredients;"
     )
     response.content_type = "application/json"
-    return json.dumps([{"recipe": row.Recipe.properties} for row in results])
+    return json.dumps([{"recipe": row.n.properties} for row in results])
+
 
 if __name__ == "__main__":
     run(port=8080)
