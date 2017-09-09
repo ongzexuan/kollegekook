@@ -117,19 +117,22 @@
                     }, "json");
             return false;
         }
+
+
         function search() {
-            var query=$("#inputtext").find("input[name=search]").val();
-            $.get("/search?q=" + encodeURIComponent(query),
+            var query=$("#inputtext").val();
+            $.get("/search_ingredients?q=" + encodeURIComponent(query),                
                     function (data) {
-                        console.log("search activated");
+                        //console.log("search activated2");
                         var t = $("table#results tbody").empty();
                         if (!data || data.length == 0) return;
+                        console.log(data);
                         data.forEach(function (row) {
-                            var recipes = row.recipes;
-                            $("<tr><td>" + recipes.name + "</td><td>" + "Ingredients" + "</td><td>" + recipes.time + "</td><td>"+generateStars(recipes.popularity)+"</td></tr>").appendTo(t).click(function() { showRecipe($(this).find(recipes.name).text());});
+                            var recipes = row.recipe;
+                            $("<tr><td>" + recipes.title + "</td><td>" + "Ingredients" + "</td><td>" + recipes.time + "</td><td>"+generateStars(recipes.popularity)+"</td></tr>").appendTo(t).click(function() { showRecipe($(this).find(recipes.name).text());});
 
                         });
-                        showRecipe(data[0].movie.title);
+                        //showRecipe(data[0].recipe.title);
                     }, "json");
             return false;
         }

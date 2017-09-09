@@ -11,6 +11,7 @@ graph = Graph("http://neo4j:password@localhost:7474/db/data")
 def get_index():
     return static_file("index.html", root="static")
 
+<<<<<<< HEAD
 @get('/<filename:re:.*\.css>')
 def stylesheets(filename):
     return static_file(filename, root='static/')
@@ -22,6 +23,7 @@ def stylesheets(filename):
 @get('/<filename:re:.*\.html>')
 def stylesheets(filename):
     return static_file(filename, root='static/')
+>>>>>>> d4f5f3df92425d815cd6c291acc17f131317b785
 
 @get("/graph")
 def get_graph():
