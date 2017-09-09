@@ -91,22 +91,25 @@ def search_recipe():
         )
         # Note: passing a dictionary as second parameter to graph.cypher.execute
         # has not been tested; the first 3 lines have been tested in Neo4J
-
+        response.content_type = "application/json"
         return json.dumps([{"recipe": row.recipe.properties} for row in results])
 
 
 @get("/search_ingredients")
 def search_ingredients():
     try:
-        q = request.query["q"]  #q is recipe
+        q = request.query["q"]
+        # q is recipe
     except KeyError:
         return []
-    results = graph.cypher.execute(
-        "MATCH ((i:Ingredient)-[Ingredient_in]->(r:Recipe {name: q})) "
-        "RETURN collect(i.name) as ingredients"
-    )
-    response.content_type = "application/json"
-    return json.dumps([{"recipe": row.Recipe.properties} for row in results])
+    else:
+        results = graph.cypher.execute(
+            "MATCH ((i:Ingredient)-[Ingredient_in]->(r:Recipe {name: input_recipe})) "
+            "RETURN collect(i.name) as ingredients",
+            {"input_recipe": q}
+        )
+        response.content_type = "application/json"
+        return json.dumps([{"recipe": row.recipe.properties} for row in results])
 
 if __name__ == "__main__":
     run(port=8080)
