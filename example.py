@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
-
 import json
 
 from bottle import get, run, request, response, static_file
 from py2neo import Graph
 
-
 graph = Graph("http://neo4j:password@localhost:7474/db/data")
-
 
 @get("/")
 def get_index():
     return static_file("index.html", root="static")
 
+@get('/<filename:re:.*\.css>')
+def stylesheets(filename):
+    return static_file(filename, root='static/')
 
 @get("/graph")
 def get_graph():
