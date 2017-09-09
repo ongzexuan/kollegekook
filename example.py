@@ -11,18 +11,17 @@ graph = Graph("http://neo4j:password@localhost:7474/db/data")
 def get_index():
     return static_file("index.html", root="static")
 
-@get("/<filename:re:.*\.css>")
+@get('/<filename:re:.*\.css>')
 def stylesheets(filename):
-    return static_file(filename, root="static")
+    return static_file(filename, root='static/')
 
-@get("/<filename:re:.*\.jpg>")
+@get('/<filename:re:.*\.jpg>')
 def stylesheets(filename):
-    return static_file(filename, root="static")
+    return static_file(filename, root='static/')
 
-@get("/<filename:re:.*\.html>")
+@get('/<filename:re:.*\.html>')
 def stylesheets(filename):
-    return static_file(filename, root="static")
-
+    return static_file(filename, root='static/')
 
 @get("/graph")
 def get_graph():
@@ -77,6 +76,35 @@ def get_recipe(title):
             "cast": [dict(zip(("name", "job", "role"), member)) for member in row.cast]}
 
 
+
+#search one away
+@get("/search_oneaway")
+def search_recipe():
+    try:
+        q = request.query["q"]
+        # q is comma-separated string of ingredients
+    except KeyError:
+        return []
+    else:
+        
+
+        # ingredient_set is a string of the form ['Oil','Water'] e.g.
+
+        results = graph.cypher.execute(
+            #"MATCH (n:Recipe)<-[:Ingredient_in]-(i:Ingredient)"
+            #"WHERE i.name IN {ingredient_set: ingredient_set}"
+            #"RETURN (n)<-[:Ingredient_in]-(:Ingredient)",
+            #{"ingredient_set": ingredient_set}
+            "MATCH(i:Ingredient) WHERE (i)-[:Ingredient_in]->(:Recipe {title: \""+q+"\"}) RETURN (i);"
+        )
+        # Note: passing a dictionary as second parameter to graph.cypher.execute
+        # has not been tested; the first 3 lines have been tested in Neo4J
+        response.content_type = "application/json"
+        return json.dumps([{"ingredient": row.i.properties} for row in results])
+
+
+
+#search for ingredients of a recipe
 @get("/search_recipe")
 def search_recipe():
     try:
@@ -85,40 +113,79 @@ def search_recipe():
     except KeyError:
         return []
     else:
+        
+
+        # ingredient_set is a string of the form ['Oil','Water'] e.g.
+
+        results = graph.cypher.execute(
+            #"MATCH (n:Recipe)<-[:Ingredient_in]-(i:Ingredient)"
+            #"WHERE i.name IN {ingredient_set: ingredient_set}"
+            #"RETURN (n)<-[:Ingredient_in]-(:Ingredient)",
+            #{"ingredient_set": ingredient_set}
+            "MATCH(i:Ingredient) WHERE (i)-[:Ingredient_in]->(:Recipe {title: \""+q+"\"}) RETURN (i);"
+        )
+        # Note: passing a dictionary as second parameter to graph.cypher.execute
+        # has not been tested; the first 3 lines have been tested in Neo4J
+        response.content_type = "application/json"
+        return json.dumps([{"ingredient": row.i.properties} for row in results])
+
+
+#search for information of a recipe
+@get("/search_actualrecipe")
+def search_actualrecipe():
+    try:
+        q = request.query["q"]
+        # q is comma-separated string of ingredients
+    except KeyError:
+        return []
+    else:
+        
+
+        # ingredient_set is a string of the form ['Oil','Water'] e.g.
+
+        results = graph.cypher.execute(
+            #"MATCH (n:Recipe)<-[:Ingredient_in]-(i:Ingredient)"
+            #"WHERE i.name IN {ingredient_set: ingredient_set}"
+            #"RETURN (n)<-[:Ingredient_in]-(:Ingredient)",
+            #{"ingredient_set": ingredient_set}
+            "MATCH(n:Recipe {title: \""+q+"\"}) RETURN (n);" 
+        )
+        # Note: passing a dictionary as second parameter to graph.cypher.execute
+        # has not been tested; the first 3 lines have been tested in Neo4J
+        response.content_type = "application/json"
+        return json.dumps([{"ingredient": row.n.properties} for row in results])
+
+
+#search for recipes given an ingredient
+@get("/search_ingredients")
+def search_ingredients():
+    try:
+        q = request.query["q"]
+    except KeyError:
+        return []
+    else:
         ingredient_list = q.split(',')
 
         ingredient_set = "['"
         for ingredient in ingredient_list:
             ingredient_set += ingredient + "','"
-        ingredient_set -= ",'"
+        ingredient_set = ingredient_set[0:-2]
         ingredient_set += "]"
 
-        # ingredient_set is a string of the form ['Oil','Water'] e.g.
-
         results = graph.cypher.execute(
-            "MATCH (n:Recipe)<-[:Ingredient_in]-(i:Ingredient)"
-            "WHERE i.name IN {ingredient_set: ingredient_set}"
-            "RETURN (n)<-[:Ingredient_in]-(:Ingredient)",
-            {"ingredient_set": ingredient_set}
+            
+            "MATCH(n:Recipe)<-[:Ingredient_in]-(i:Ingredient) WHERE i.name IN "+ingredient_set+" RETURN (n);"
+# UNION ALL MATCH(n:Recipe {title:\""+q+"\"}) RETURN(n);
+
+            #"MATCH(n:Recipe)<-[:Ingredient_in]-(i:Ingredient) WHERE i.name IN [\""+q+"\"] RETURN (n);"
+            #"MATCH(n) RETURN n;"
+            
+            #"MATCH ((i:Ingredient)-[:Ingredient_in]->(r:Recipe {name: input_recipe})) "
+            #"RETURN collect(i.name) as ingredients",
+            #"input_recipe": q}
         )
-        # Note: passing a dictionary as second parameter to graph.cypher.execute
-        # has not been tested; the first 3 lines have been tested in Neo4J
-
+        response.content_type = "application/json"
         return json.dumps([{"recipe": row.n.properties} for row in results])
-
-
-@get("/search_ingredients")
-def search_ingredients():
-    try:
-    except KeyError:
-        return []
-    results = graph.cypher.execute(
-        #"MATCH (n) RETURN n;"
-        "MATCH ((i:Ingredient)-[Ingredient_in]->(r:Recipe {name: "+q+"})) RETURN collect(i.name) as ingredients;"
-    )
-    response.content_type = "application/json"
-    return json.dumps([{"recipe": row.n.properties} for row in results])
-
 
 if __name__ == "__main__":
     run(port=8080)

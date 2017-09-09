@@ -11,20 +11,21 @@
 <div role="navigation" class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="row">
-            <div class="col-sm-6 col-md-6">
+            <div class="col-sm-8 col-md-8">
                 <ul class="nav navbar-nav">
                     <li>                        
                         <form role="search" class="navbar-form" id="search">
-                            <button class="btn btn-success" type="submit">Home</button>
+                            <a href="/index2.html"><button class="btn btn-primary" type="button">Home</button></a>
                             <div class="form-group">
                                 <input id="inputtext" type="text" placeholder="Search for Recipe/Ingredient" class="form-control" name="search">
                             </div>
-                            <button class="btn btn-default" type="submit">Search</button>
+                            <button class="btn btn-success" type="submit">Search</button>
+                            <button class="btn btn-default" type="button">I'm Feeling Lucky</button>
                         </form>
                     </li>
                 </ul>
             </div>
-            <div class="navbar-header col-sm-6 col-md-6">
+            <div class="navbar-header col-sm-4 col-md-4">
                 <div class="logo-well">
                     <a href="http://neo4j.com/developer-resources">
                     <img src="http://sml.me.cmu.edu/wp-content/uploads/2014/06/CarnegieMellonUniversity_wordmark.gif" alt="Neo4j World's Leading Graph Database" id="logo">
@@ -60,7 +61,7 @@
         <div class="panel panel-default">
             <div class="panel-heading" id="title">Details</div>
             <div class="row">
-                <div class="col-sm-4 col-md-4">
+                <div class="col-sm-4 col-md-4" id="picholder">
                     <img src="" class="well" id="poster"/>
                 </div>
                 <div class="col-md-8 col-sm-8">
@@ -70,20 +71,31 @@
                     <li>Carrot</li>
                     </ol>
                     <h4>Steps</h4>
-                    <ol id="crew">
+                    <ol id="steps">
                     </ol>
                     <h4>Video</h4>
-                    <iframe width="300" height="225" src="https://www.youtube.com/embed/8TW-4Pv3U3Y" frameborder="0" allowfullscreen></iframe>
+                    <iframe id="video" width="300" height="225" src="https://www.youtube.com/embed/8TW-4Pv3U3Y" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <style type="text/css">
+    body { background: url("/kitchentop2.jpg") repeat fixed 0 0 rgba(0, 0, 0, 0); }
     .node { stroke: #222; stroke-width: 1.5px; }
     .node.actor { fill: #888; }
     .node.movie { fill: #BBB; }
     .link { stroke: #999; stroke-opacity: .6; stroke-width: 1px; }
+
+    #picholder {
+        max-width:150px !important; 
+        max-height:150px !important;
+    }
+    #poster {
+        max-width:100% !important; 
+        max-height:100% !important;
+    }
+
 </style>
 
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -96,7 +108,8 @@
           for (var i = 0; i < params.length; i++) {
             var p=params[i].split('=');
             if (p[0] == theParameter) {
-                console.log(p[1]);
+                console.log(p[1]);  
+                //p[1] = p[1].replace("+","%20");
                 //return decodeURIComponent(p[1]);
                 return p[1];
             }
@@ -118,6 +131,62 @@
             return false;
         }
 
+        //get a list of ingredients given a recipe
+        function clickShowRecipes(name, callback) {
+            console.log("clickShowRecipe for "+name);
+            var query=name;
+            var s = "";
+            $.get("/search_actualrecipe?q=" + encodeURIComponent(query),                
+                    function (data) {
+                        //console.log("search activated2");
+                        //var t = $("table#results tbody").empty();
+                        console.log(data[0].ingredient);
+                        if (!data || data.length == 0) return;
+                        $("#title").text(data[0].ingredient.name);
+                        $("#poster").attr("src",data[0].ingredient.pic_url);
+
+                        //var i = $("#ingredients");
+                        var $list = $("#ingredients").empty();
+                        data.forEach(function (row) {
+                            var ingredient = row.ingredient;
+                            console.log(ingredient.name);
+                            $list.append("<li>"+ingredient.name+"</li>");
+                        });
+                        $("#steps").empty().append(data[0].ingredient.steps);
+                        $("#video").attr("src",data[0].ingredient.video_url);
+
+
+                        
+                        //showRecipe(data[0].recipe.title);
+                        console.log(s);
+                        callback(s);
+                    }, "json");
+            //console.log(s);
+            return false;
+        }
+
+        function showRecipes(name, callback) {
+            console.log("ShowRecipe for "+name);
+            var query=name;
+            var s = "";
+            $.get("/search_recipe?q=" + encodeURIComponent(query),                
+                    function (data) {
+                        //console.log("search activated2");
+                        //var t = $("table#results tbody").empty();
+                        console.log(data);
+                        if (!data || data.length == 0) return;
+                        data.forEach(function (row) {
+                            var ingredient = row.ingredient;
+                            console.log(ingredient.name);
+                            s += "<li>"+ingredient.name+"</li>";
+                        });
+                        //showRecipe(data[0].recipe.title);
+                        console.log(s);
+                        if(callback) callback(s);
+                    }, "json");
+            //console.log(s);
+            return false;
+        }
 
         function search() {
             var query=$("#inputtext").val();
@@ -129,13 +198,18 @@
                         console.log(data);
                         data.forEach(function (row) {
                             var recipes = row.recipe;
-                            $("<tr><td>" + recipes.title + "</td><td>" + "Ingredients" + "</td><td>" + recipes.time + "</td><td>"+generateStars(recipes.popularity)+"</td></tr>").appendTo(t).click(function() { showRecipe($(this).find(recipes.name).text());});
-
+                            var ingredients = "";
+                            showRecipes(recipes.title, function(data) {
+                                ingredients = data;
+                                $("<tr><td>" + recipes.title + "</td><td><ol>" + ingredients + "</ol></td><td>" + recipes.time + "</td><td>"+generateStars(recipes.popularity)+"</td></tr>").appendTo(t).click(function() { clickShowRecipes(recipes.title);});
+                            });
+                            //ingredients = showRecipes(recipes.title);    
                         });
                         //showRecipe(data[0].recipe.title);
                     }, "json");
             return false;
         }
+
 
         function generateStars(num) {
             var s = ""
@@ -146,8 +220,10 @@
             return s;
         }
 
-        $("#inputtext").attr('value',getParameter("search"));
+        $("#inputtext").attr('value',getParameter("search").replace("+"," ").replace("%20"," ").replace("%2C",","));
         $("#inputtext").submit(search);
+
+
 
         search();
     });
