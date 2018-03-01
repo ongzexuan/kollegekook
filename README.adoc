@@ -1,6 +1,8 @@
-= Neo4j Movies Example Application - The Python Version
+= Kollegekook
 
-First get yourself setup with link:http://docs.python-guide.org/en/latest/dev/virtualenvs/[Virtual Env] so we don't break any other Python stuff you have on your machine. After you've got that installed let's setup an environment for our app:
+Kollegekook is a web application for poor college students to find simple recipes to cook based on available ingredients and recipe complexity.
+
+Kollegkook is runs on Neo4J database backend. Pages are served by a simple Python Bottle server.
 
 [source]
 ----
@@ -34,4 +36,4 @@ Listening on http://127.0.0.1:8080/
 Hit Ctrl-C to quit.
 ----
 
-Navigate to http://localhost:8080 and you should see your first Neo4j application
+Navigate to http://localhost:8080/
